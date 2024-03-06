@@ -3,9 +3,13 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import json
+import db
+
+from datetime import datetime
+
 
 HUBS = [
-    "https://habr.com/ru/hubs/infosecurity/articles/",
+    "",
     "https://habr.com/ru/hubs/python/articles/"
 ]
 
@@ -52,7 +56,8 @@ async def parse_hub(category_url):
             except AttributeError:
                 author_link = None
                 authorName = None
-            time = article.find('time').get('datetime')
+            time = article.find('time').get('datetime').split('.')[0]
+            time = str(datetime.strptime(time, '%Y-%m-%dT%H:%M:%S'))
             hub_name = category_url.split("/")[-3]
 
             result = {'Hub': hub_name,
@@ -62,10 +67,10 @@ async def parse_hub(category_url):
                       'Time': time,
                       'Link': link}
 
-            if id in ARTICLES:
+            if await db.is_article_in_table(id):
                 continue
             else:
-                ARTICLES[id] = result
+                await db.add_article(id, result)
 
     # with open("dict_articles.json", "w", encoding='utf-8') as file:
     #     json.dump(ARTICLES, file, sort_keys=False, indent=4, ensure_ascii=False)
@@ -79,6 +84,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    db.create_tables()
+    HUBS = [f'https://habr.com/ru/hubs/{hub}/articles/' for hub in db.select_all_hubs()]
     asyncio.run(main())
-    with open("dict_articles.json", "w", encoding='utf-8') as file:
-        json.dump(ARTICLES, file, sort_keys=False, indent=4, ensure_ascii=False)
