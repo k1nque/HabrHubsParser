@@ -1,9 +1,10 @@
 import sqlite3
 import aiosqlite
 
+DB_PATH = '/habrParser/db.sqlite3'
 
 async def add_article(article_id: int, article_values: dict[str, str]) -> None:
-    async with aiosqlite.connect('database.db') as db:
+    async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("INSERT INTO articles ("
                          "id, hub_name, title, author_name, author_link, datetime, link)"
                          "VALUES "
@@ -12,7 +13,7 @@ async def add_article(article_id: int, article_values: dict[str, str]) -> None:
 
 
 async def is_article_in_table(article_id: int) -> bool:
-    async with aiosqlite.connect('database.db') as db:
+    async with aiosqlite.connect(DB_PATH) as db:
         async with db.execute('SELECT * FROM articles '
                               f'WHERE id = {article_id}', ) as cur:
             rows = await cur.fetchall()
@@ -20,7 +21,7 @@ async def is_article_in_table(article_id: int) -> bool:
 
 
 def select_all_hubs():
-    with sqlite3.connect('database.db') as db:
+    with sqlite3.connect(DB_PATH) as db:
         cursor = db.cursor()
         cursor.execute('SELECT * FROM hubs')
         hubs = cursor.fetchall()
@@ -28,13 +29,13 @@ def select_all_hubs():
 
 
 def create_tables() -> None:
-    with sqlite3.connect('database.db') as db:
-        db.execute("CREATE TABLE IF NOT EXISTS hubs ("
+    with sqlite3.connect(DB_PATH) as db:
+        db.execute("CREATE TABLE IF NOT EXISTS Hubs ("
                    "id INT PRIMARY KEY,"
                    "hub_name VARCHAR(50)"
                    ")")
 
-        db.execute("CREATE TABLE IF NOT EXISTS articles ("
+        db.execute("CREATE TABLE IF NOT EXISTS Articles ("
                    "id INT PRIMARY KEY,"
                    "hub_name VARCHAR(50),"
                    "title VARCHAR(150),"

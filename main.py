@@ -7,15 +7,6 @@ import db
 
 from datetime import datetime
 
-
-HUBS = [
-    "",
-    "https://habr.com/ru/hubs/python/articles/"
-]
-
-ARTICLES = {}
-
-
 async def send_request(url) -> str:
     connector = aiohttp.TCPConnector(limit=50)
     async with aiohttp.ClientSession(trust_env=True, connector=connector) as session:
