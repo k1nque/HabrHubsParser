@@ -11,7 +11,6 @@ COPY requirements.txt .
 COPY main.py .
 COPY db.py .
 COPY parser.py .
-COPY build.bash .
 COPY run.bash .
 COPY /habrParser ./habrParser
 
