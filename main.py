@@ -38,6 +38,8 @@ async def parse_hub(category_url):
 
         for article in articles:
             info_block = article.find("a", class_="tm-title__link")
+            if info_block is None:
+                continue
             title = info_block.find("span").text.strip()
             id = int(info_block.get("href").split("/")[-2])
             link = f"https://habr.com{info_block.get('href')}"
@@ -69,12 +71,12 @@ async def parse_hub(category_url):
     # print(ARTICLES)
 
 
-async def main():
-    data = [parse_hub(hub) for hub in HUBS]
+async def start_parsing(data):
     await asyncio.gather(*data)
 
 
 if __name__ == "__main__":
     db.create_tables()
     HUBS = [f'https://habr.com/ru/hubs/{hub}/articles/' for hub in db.select_all_hubs()]
-    asyncio.run(main())
+    data = [parse_hub(hub) for hub in HUBS]
+    asyncio.run(start_parsing(data))
