@@ -1,6 +1,6 @@
 from time import sleep
 from db import select_all_hubs
-from main import start_parsing, parse_hub
+from parser import start_parsing, parse_hub
 
 import asyncio
 
