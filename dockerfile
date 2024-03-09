@@ -1,14 +1,13 @@
 FROM python:3.12
 
-# установка рабочей директории в контейнере
 WORKDIR /code
 
-# копирование файла зависимостей в рабочую директорию
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SUPERUSER_PASSWORD=123
+ENV DJANGO_SUPERUSER_EMAIL=example@example.com
+ENV DJANGO_SUPERUSER_USERNAME=admin
+
 COPY requirements.txt .
-
-# установка зависимостей
-
-# копирование содержимого локальной директории src в рабочую директорию
 COPY main.py .
 COPY db.py .
 COPY parser.py .
@@ -18,7 +17,15 @@ COPY /habrParser ./habrParser
 
 EXPOSE 8000
 
-RUN sh build.bash
+RUN python3 -m venv ./.venv
+RUN .venv/bin/pip3 install -r requirements.txt
+RUN chmod ugo+x .venv/bin/python3 
+RUN .venv/bin/python3 ./habrParser/manage.py createcachetable
+RUN .venv/bin/python3 ./habrParser/manage.py createsuperuser \
+        --noinput \
+        --username $DJANGO_SUPERUSER_USERNAME \
+        --email $DJANGO_SUPERUSER_EMAIL
+RUN .venv/bin/python3 ./habrParser/manage.py makemigrations
+RUN .venv/bin/python3 ./habrParser/manage.py migrate
 
-# команда, выполняемая при запуске контейнера
-CMD sh run.bash
+CMD bash run.bash
