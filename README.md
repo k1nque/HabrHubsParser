@@ -1,11 +1,7 @@
-It is recommended to have python 3.10+
+You can configure admin_nickname and admin_password in dockerfile.
 
-Firstly, run:
-    bash build.bash
+To start the app you need:
+    1. docker build .
+    2. docker run -p 8000:8000 [docker_container_id]
 
-After that run:
-    bash run.bash
-
-The access to the admin panel will be on: http://127.0.0.1:8000/admin/
-
-To stop server and parser you can kill daemons.
+The service will be available by http://0.0.0.0:8000/admin
